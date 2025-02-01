@@ -36,11 +36,33 @@ class Scheduler:
 
 sched = Scheduler()
 
+class Result: 
+    def __init__(self, value=None, exc=None):
+        self.value = value 
+        self.exc = exc 
+
+    def result(self):
+        if self.exc:
+            raise self.exc
+        return self.value
+
+class QueueClosed(Exception):
+    pass
+
 class AsyncQueue: 
     def __init__(self):
         self.items = deque()
         self.waiting = deque()      # All getters waiting for data
+        self._closed = False        # Can queue be used anymore? 
+    
+    
+    def close(self):
+        self._closed = True
+
     def put(self, item):
+        if self._closed:
+            raise QueueClosed()
+        
         self.items.append(item)
         if self.waiting:
             func = self.waiting.popleft()
@@ -51,9 +73,13 @@ class AsyncQueue:
 
     def get(self, callback):
         # Wait until an item is available. Then return it 
+        # Queuestion: How does a closed queue interact with get()
         if self.items:
-            callback(self.items.popleft())
+            callback(Result(value=self.items.popleft()))
         else:
+            # No items available (must wait)
+            if self._closed:
+                callback(Result(exc=QueueClosed()))             # Error results
             self.waiting.append(lambda: self.get(callback))
 
 def producer(q, count): 
@@ -63,18 +89,18 @@ def producer(q, count):
             q.put(n)
             sched.call_later(1, lambda: _run(n+1))
         else:
-            q.put(None)
+            q.close()           # Means no more items will be produced
             print('Producing done')
     _run(0)
 
 def consumer(q):
-    def _consume(item):
-        if item is None: 
-            print('Consumer done')
-            pass 
-        else: 
+    def _consume(result):
+        try:
+            item = result.result()
             print('Consuming', item)
             sched.call_soon(lambda: consumer(q))
+        except QueueClosed:
+            print('Consumer done')
     q.get(callback=_consume)
 
 q = AsyncQueue()
