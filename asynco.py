@@ -23,7 +23,7 @@ class Scheduler:
                 delta = deadline - time.time()
                 if delta > 0:
                     time.sleep(delta)
-                self.ready.append(fund)
+                self.ready.append(func)
 
             while self.ready: 
                 func = self.ready.popleft()
@@ -34,18 +34,16 @@ sched = Scheduler()
 def countdown(n):
     if n > 0:
         print('Down', n)
-        time.sleep(1)
-        sched.call_soon(4, lambda: countdown(n-1))
+        sched.call_later(4, lambda: countdown(n-1))
 
 
 def countup(stop, x=0):
     if x < stop:
         print('Up', x)
-        time.sleep(1)
-        sched.call_soon(1, lambda: countup(stop, x+1))
+        sched.call_later(1, lambda: countup(stop, x+1))
 
 # Problem: How to achieve concurrency without threads? 
 # Issue: Figure out how to switch between tasks.
 sched.call_soon(lambda: countdown(5))
-sched.call_soon(lambda: countup(5))
+sched.call_soon(lambda: countup(20))
 sched.run()
