@@ -20,6 +20,8 @@ def countup(stop):
 # Concurrent execution 
 # Classic solution: use threads 
 
-import threading 
-threading.Thread(target=countdown, args=(5,)).start()
-threading.Thread(target=countup, args=(5,)).start()
+# import threading 
+# threading.Thread(target=countdown, args=(5,)).start()
+# threading.Thread(target=countup, args=(5,)).start()
+
+
