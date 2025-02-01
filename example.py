@@ -14,6 +14,12 @@ def countup(stop):
         x += 1
 
 # Sequential execution
-countdown(5)
-countup(5)
+# countdown(5)
+# countup(5)
 
+# Concurrent execution 
+# Classic solution: use threads 
+
+import threading 
+threading.Thread(target=countdown, args=(5,)).start()
+threading.Thread(target=countup, args=(5,)).start()
