@@ -1,4 +1,3 @@
-
 # Producer-consumer problem
 # Challenge : How to implement the same functionality, but no threads.
 
@@ -54,7 +53,6 @@ class AsyncQueue:
         self.items = deque()
         self.waiting = deque()      # All getters waiting for data
         self._closed = False        # Can queue be used anymore? 
-    
     
     def close(self):
         self._closed = True
