@@ -1,4 +1,4 @@
-This is an attempt to create your own async library - in Python 
+This is an attempt to create your own async library - in Python. The original video can be found here - [Build Your Own Async - David Beazley](https://youtu.be/Y4Gt3Xjd7G8?si=M0kjCvr0LoBbyhVt)
 
 ## Chapter 1 - Introduction
 Assume you have two functions - `coutdown` and `countup`. Both count down and up respectively with a setup of 1 second break. If we run these two functions like 
