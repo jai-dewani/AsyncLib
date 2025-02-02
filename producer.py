@@ -56,6 +56,9 @@ class AsyncQueue:
     
     def close(self):
         self._closed = True
+        if self.waiting and not self.items:
+            for func in self.waiting:
+                sched.call_soon(func)
 
     def put(self, item):
         if self._closed:
@@ -78,7 +81,8 @@ class AsyncQueue:
             # No items available (must wait)
             if self._closed:
                 callback(Result(exc=QueueClosed()))             # Error results
-            self.waiting.append(lambda: self.get(callback))
+            else:
+                self.waiting.append(lambda: self.get(callback))
 
 def producer(q, count): 
     def _run(n):
